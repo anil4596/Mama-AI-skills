@@ -1,0 +1,19 @@
+{
+  "name": "Mana AI Skills",
+  "short_name": "Mana AI",
+  "description": "తెలుగులో ఉచిత AI నైపుణ్య పాఠాలు",
+  "lang": "te",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f8fb",
+  "theme_color": "#102a43",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
