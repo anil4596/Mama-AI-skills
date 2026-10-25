@@ -25,8 +25,19 @@ export default async function handler(req, res) {
     });
     const data = await response.json();
     if (!response.ok) {
-      console.error("Gemini API error", response.status, data?.error?.message || "");
-      return res.status(502).json({ error: "AI సేవ స్పందించలేదు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి." });
+      const apiMessage = data?.error?.message || "";
+      console.error("Gemini API error", response.status, apiMessage);
+      let userMessage = "AI సేవలో తాత్కాలిక సమస్య (HTTP " + response.status + ").";
+      if (response.status === 400 || response.status === 404) {
+        userMessage = "Gemini మోడల్ లేదా API అభ్యర్థనలో సమస్య ఉంది (HTTP " + response.status + ").";
+      } else if (response.status === 401 || response.status === 403) {
+        userMessage = "Gemini API key చెల్లకపోవచ్చు లేదా దానికి అనుమతి లేదు (HTTP " + response.status + "). Vercelలో GEMINI_API_KEY సరిచూడాలి.";
+      } else if (response.status === 429) {
+        userMessage = "Gemini API పరిమితి లేదా కోటా పూర్తయింది (HTTP 429). కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.";
+      } else if (response.status >= 500) {
+        userMessage = "Gemini సర్వర్ ప్రస్తుతం స్పందించడం లేదు (HTTP " + response.status + ").";
+      }
+      return res.status(502).json({ error: userMessage });
     }
     const answer = data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim();
     if (!answer) return res.status(502).json({ error: "AI నుంచి సమాధానం రాలేదు. మళ్లీ ప్రయత్నించండి." });
